@@ -109,12 +109,20 @@
             <p id="coffee-description"></p>
             <button onclick="closeFullInfo()">Close</button>
         </div>
+        <div id="tracker">
+            Total Coffees: <span id="coffee-count">0</span>
+            <button onclick="resetTracker()">Reset</button>
+        </div>
+        <div id="timer"></div>
     </div>
 
     <script>
+        let startTime;
+
         function addCoffee() {
             const coffeeSelect = document.getElementById("coffee-input");
             const coffeeList = document.getElementById("coffee-list");
+            const coffeeCount = document.getElementById("coffee-count");
 
             const selectedCoffee = coffeeSelect.value;
 
@@ -125,6 +133,9 @@
                     <button class="delete-button" onclick="deleteCoffee(this)">Delete</button>
                 `;
                 coffeeList.appendChild(li);
+
+                // Update the coffee count
+                coffeeCount.textContent = parseInt(coffeeCount.textContent) + 1;
             }
         }
 
@@ -132,6 +143,10 @@
             const li = button.parentElement;
             li.remove();
             hideFullInfo();
+
+            // Update the coffee count
+            const coffeeCount = document.getElementById("coffee-count");
+            coffeeCount.textContent = parseInt(coffeeCount.textContent) - 1;
         }
 
         function showFullInfo(coffeeName) {
@@ -154,7 +169,39 @@
             const fullInfo = document.getElementById("full-info");
             fullInfo.style.display = "none";
         }
+
+        function resetTracker() {
+            const coffeeList = document.getElementById("coffee-list");
+            const coffeeCount = document.getElementById("coffee-count");
+            const timer = document.getElementById("timer");
+
+            // Clear the coffee list
+            coffeeList.innerHTML = "";
+
+            // Reset the coffee count
+            coffeeCount.textContent = "0";
+
+            // Reset the timer
+            startTime = new Date();
+            updateTimer();
+        }
+
+        function updateTimer() {
+            const timer = document.getElementById("timer");
+            const currentTime = new Date();
+            const elapsedTime = currentTime - startTime;
+
+            const minutes = Math.floor(elapsedTime / (1000 * 60));
+            const seconds = Math.floor((elapsedTime % (1000 * 60)) / 1000);
+
+            timer.textContent = `Time since start: ${minutes}m ${seconds}s`;
+        }
+
+        // Start the timer when the page loads
+        startTime = new Date();
+        setInterval(updateTimer, 1000);
     </script>
 
 </body>
 </html>
+
