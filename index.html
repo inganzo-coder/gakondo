@@ -129,7 +129,7 @@
             if (selectedCoffee.trim() !== "") {
                 const li = document.createElement("li");
                 li.innerHTML = `
-                    <a href="https://maps.app.goo.gl/hQGamidNkdSjBgFh9" onclick="showFullInfo('${selectedCoffee}')">${selectedCoffee}</a>
+                    <a href="https://www.google.com/maps/place/Gasharu+Coffee+Plantation/@-2.240756,28.785499,10.65z/data=!4m10!1m2!2m1!1scoffee+plantation+in+rwanda!3m6!1s0x19c2cf38e01fb7cf:0xad0c684d535d807c!8m2!3d-2.2852273!4d29.1575638!15sChtjb2ZmZWUgcGxhbnRhdGlvbiBpbiByd2FuZGGSAQRmYXJt4AEA!16s%2Fg%2F11v459y6wx?entry=ttu" onclick="showFullInfo('${selectedCoffee}')">${selectedCoffee}</a>
                     <button class="delete-button" onclick="deleteCoffee(this)">Delete</button>
                 `;
                 coffeeList.appendChild(li);
