@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GAKONDO Coffee Tracker</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f6f6f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        #coffee-tracker {
+            background-color: #fff;
+            padding: 2em;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            width: 300px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 1em;
+        }
+
+        select {
+            width: 100%;
+            padding: 0.5em;
+            margin-bottom: 1em;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: #333;
+            color: #fff;
+            padding: 0.5em 1em;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #555;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            background-color: #eee;
+            margin: 0.5em 0;
+            padding: 0.5em;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .delete-button {
+            background-color: #ff6666;
+            color: #fff;
+            border: none;
+            padding: 0.2em 0.5em;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        a {
+            text-decoration: none;
+            color: #333;
+        }
+
+        .full-info {
+            background-color: #fff;
+            padding: 2em;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            width: 300px;
+            text-align: center;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="coffee-tracker">
+        <h1>GAKONDO </br>Coffee Tracker</h1>
+        <select id="coffee-input">
+            <option value="Bwiru Blend">Bwiru Blend</option>
+            <option value="New Blend">New Blend</option>
+            <option value="Old Blend">Old Blend</option>
+           
+        </select>
+        <button onclick="addCoffee()">Add</button>
+        <ul id="coffee-list"></ul>
+        <div id="full-info" class="full-info">
+            <h2 id="coffee-title"></h2>
+            <p id="coffee-description"></p>
+            <button onclick="closeFullInfo()">Close</button>
+        </div>
+    </div>
+
+    <script>
+        function addCoffee() {
+            const coffeeSelect = document.getElementById("coffee-input");
+            const coffeeList = document.getElementById("coffee-list");
+
+            const selectedCoffee = coffeeSelect.value;
+
+            if (selectedCoffee.trim() !== "") {
+                const li = document.createElement("li");
+                li.innerHTML = `
+                    <a href="https://maps.app.goo.gl/hQGamidNkdSjBgFh9" onclick="showFullInfo('${selectedCoffee}')">${selectedCoffee}</a>
+                    <button class="delete-button" onclick="deleteCoffee(this)">Delete</button>
+                `;
+                coffeeList.appendChild(li);
+            }
+        }
+
+        function deleteCoffee(button) {
+            const li = button.parentElement;
+            li.remove();
+            hideFullInfo();
+        }
+
+        function showFullInfo(coffeeName) {
+            const fullInfo = document.getElementById("full-info");
+            const coffeeTitle = document.getElementById("coffee-title");
+            const coffeeDescription = document.getElementById("coffee-description");
+
+            coffeeTitle.textContent = coffeeName;
+            coffeeDescription.textContent = `Full information about ${coffeeName}.`;
+
+            fullInfo.style.display = "block";
+        }
+
+        function hideFullInfo() {
+            const fullInfo = document.getElementById("full-info");
+            fullInfo.style.display = "none";
+        }
+
+        function closeFullInfo() {
+            const fullInfo = document.getElementById("full-info");
+            fullInfo.style.display = "none";
+        }
+    </script>
+
+</body>
+</html>
