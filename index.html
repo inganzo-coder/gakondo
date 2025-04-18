@@ -1,217 +1,1115 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="light">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coffee Tracker</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f6f6f6;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            transition: background-color 0.3s, color 0.3s;
-        }
-
-        .dark-mode {
-            background-color: #2c2c2c;
-            color: #fff;
-        }
-
-        #coffee-tracker {
-            background-color: #fff;
-            padding: 2em;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-            width: 350px;
-            text-align: center;
-            transition: background-color 0.3s, color 0.3s;
-        }
-
-        .dark-mode #coffee-tracker {
-            background-color: #3b3b3b;
-        }
-
-        h1 {
-            color: #6f4e37;
-        }
-
-        .dark-mode h1 {
-            color: #d2b48c;
-        }
-
-        select, button {
-            width: 100%;
-            padding: 0.5em;
-            margin-bottom: 1em;
-            box-sizing: border-box;
-            border-radius: 4px;
-        }
-
-        button {
-            background-color: #6f4e37;
-            color: #fff;
-            border: none;
-            cursor: pointer;
-        }
-
-        .dark-mode button {
-            background-color: #8b5e3b;
-        }
-
-        ul {
-            list-style-type: none;
-            padding: 0;
-        }
-
-        li {
-            background-color: #eee;
-            margin: 0.5em 0;
-            padding: 0.5em;
-            border-radius: 4px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .dark-mode li {
-            background-color: #555;
-        }
-
-        .coffee-icon {
-            width: 20px;
-            height: 20px;
-            margin-right: 0.5em;
-        }
-
-        .delete-button {
-            background-color: #441212;
-            color: #fff;
-            border: none;
-            padding: 0.2em 0.5em;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        .full-info {
-            background-color: #fff;
-            padding: 2em;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-            width: 300px;
-            text-align: center;
-            display: none;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-
-        .dark-mode .full-info {
-            background-color: #3b3b3b;
-            color: #fff;
-        }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#000000" />
+  <meta name="description" content="Rwandan Appointment and Accommodation Scheduling Web Application" />
+  <title>INZU Rwanda Scheduler</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  
+  <!-- Flatpickr for calendar -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/themes/dark.css">
+  
+  <!-- Custom Styles and Dark Mode Configuration -->
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: { extend: {} }
+    }
+  </script>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+        'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+    
+    .container { max-width: 1200px; margin: 0 auto; }
+    .dropdown-calendar { position: relative; }
+    .flatpickr-input { background: transparent !important; }
+    .date-time-wrapper { display: flex; gap: 10px; }
+    .date-time-wrapper > div { flex: 1; }
+    .icon-input { position: relative; }
+    .icon-input i { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); }
+    .icon-input input, .icon-input textarea, .icon-input select { padding-left: 35px !important; }
+    .calendar-toggle { cursor: pointer; position: absolute; right: 10px; top: 50%; transform: translateY(-50%); }
+    
+    html.dark .flatpickr-calendar.open { background: #374151; border-color: #4B5563; color: #F9FAFB; }
+    html.dark .flatpickr-day { color: #F9FAFB; }
+    html.dark .flatpickr-day.selected { background: #3B82F6; border-color: #3B82F6; }
+    
+    .ussd-container { max-width: 350px; font-family: monospace; font-size: 14px; }
+    .ussd-screen { border: 2px solid #ccc; border-radius: 10px; padding: 15px; margin-bottom: 15px; }
+    html.dark .ussd-screen { border-color: #4B5563; }
+    .ussd-input { border: 1px solid #ccc; border-radius: 5px; padding: 8px; font-family: monospace; }
+    html.dark .ussd-input { border-color: #4B5563; background: #1F2937; color: #F9FAFB; }
+    
+    .switch { position: relative; display: inline-block; width: 50px; height: 24px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 24px; }
+    .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+    input:checked + .slider { background-color: #3B82F6; }
+    input:checked + .slider:before { transform: translateX(26px); }
+    
+    .social-icon { font-size: 1.5rem; margin-right: 0.5rem; }
+    .social-facebook { color: #1877F2; } .social-twitter { color: #1DA1F2; }
+    .social-instagram { color: #E4405F; } .social-whatsapp { color: #25D366; }
+    html.dark .social-facebook { color: #4293ff; } html.dark .social-twitter { color: #55acee; }
+    html.dark .social-instagram { color: #ff6b81; } html.dark .social-whatsapp { color: #5df78d; }
+    
+    .listing-card { transition: transform 0.2s; }
+    .listing-card:hover { transform: scale(1.05); }
+    .filter-btn { transition: opacity 0.3s; }
+    .filter-btn:hover { opacity: 1 !important; }
+  </style>
 </head>
-<body>
-    <div id="coffee-tracker">
-        <h1>VISTA <br>Coffee Tracker</h1>
-        <button onclick="toggleDarkMode()">Light ON/OFF</button>
-        <select id="coffee-input">
-            <option value="Gishamwana">Gishamwana - Lake Kivu</option>
-            <option value="Gakenke">Gakenke - Northern Province</option>
-            <option value="Nyamasheke">Nyamasheke - Western Province</option>
-            <option value="Butare">Butare - Southern Province</option>
-            <option value="Rulindo">Rulindo - Northern Province</option>
-        </select>
-        <button onclick="addCoffee()">Add</button>
-        <ul id="coffee-list"></ul>
-        <div id="full-info" class="full-info">
-            <h2 id="coffee-title"></h2>
-            <p id="coffee-description"></p>
-            <button onclick="closeFullInfo()">Close</button>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
+  <div id="root">
+    <div class="container mx-auto px-4 py-8">
+      <!-- Header -->
+      <div class="flex justify-between items-center mb-8">
+        <h1 class="text-3xl font-bold text-center">
+          <i class="fas fa-calendar-alt text-blue-500 dark:text-blue-400 mr-2"></i>
+          <span id="app-title">INZU Rwanda Scheduler</span>
+        </h1>
+        <div class="flex items-center">
+          <span class="mr-2"><i class="fas fa-sun text-yellow-500"></i></span>
+          <label class="switch">
+            <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode()">
+            <span class="slider"></span>
+          </label>
+          <span class="ml-2"><i class="fas fa-moon text-indigo-300"></i></span>
+          <div class="flex items-center ml-4">
+            <button onclick="setLanguage('en')" class="px-2 py-1 text-sm bg-gray-200 dark:bg-gray-700 rounded">EN</button>
+            <button onclick="setLanguage('rw')" class="px-2 py-1 text-sm bg-gray-200 dark:bg-gray-700 rounded ml-2">RW</button>
+          </div>
         </div>
-        <div id="tracker">
-            Total Coffees: <span id="coffee-count">0</span>
-            <button onclick="resetTracker()">Reset</button>
+      </div>
+
+      <!-- Tabs -->
+      <div class="mb-6 border-b border-gray-200 dark:border-gray-700">
+        <ul class="flex flex-wrap -mb-px">
+          <li class="mr-2">
+            <button onclick="showTab('listings')" id="listingsTab" class="inline-block py-2 px-4 border-b-2 border-blue-500 text-blue-500 font-medium">
+              <i class="fas fa-home mr-2"></i><span id="listings-tab">Listings</span>
+            </button>
+          </li>
+          <li class="mr-2">
+            <button onclick="showTab('webApp')" id="webAppTab" class="inline-block py-2 px-4 text-gray-500 dark:text-gray-400 font-medium hover:text-gray-700 dark:hover:text-gray-300">
+              <i class="fas fa-desktop mr-2"></i><span id="webapp-tab">Appointments</span>
+            </button>
+          </li>
+          <li class="mr-2">
+            <button onclick="showTab('ussd')" id="ussdTab" class="inline-block py-2 px-4 text-gray-500 dark:text-gray-400 font-medium hover:text-gray-700 dark:hover:text-gray-300">
+              <i class="fas fa-mobile-alt mr-2"></i><span id="ussd-tab">USSD Interface</span>
+            </button>
+          </li>
+          <li class="mr-2">
+            <button onclick="showTab('updates')" id="updatesTab" class="inline-block py-2 px-4 text-gray-500 dark:text-gray-400 font-medium hover:text-gray-700 dark:hover:text-gray-300">
+              <i class="fas fa-newspaper mr-2"></i><span id="updates-tab">Updates</span>
+            </button>
+          </li>
+          <li class="mr-2">
+            <button onclick="showTab('business')" id="businessTab" class="inline-block py-2 px-4 text-gray-500 dark:text-gray-400 font-medium hover:text-gray-700 dark:hover:text-gray-300">
+              <i class="fas fa-briefcase mr-2"></i><span id="business-tab">Business Profile</span>
+            </button>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Listings Content -->
+      <div id="listingsContent" class="tab-content">
+        <!-- Filter Tags -->
+        <div class="mb-8 overflow-x-auto pb-2">
+          <div class="flex space-x-4 min-w-max">
+            <button class="filter-btn flex flex-col items-center opacity-70 hover:opacity-100 transition-opacity" onclick="filterListings('gorilla')">
+              <div class="w-8 h-8 flex items-center justify-center mb-1">
+                <i class="fas fa-paw text-lg"></i>
+              </div>
+              <span class="text-xs" id="filter-gorilla">Gorilla Trekking</span>
+            </button>
+            <button class="filter-btn flex flex-col items-center opacity-70 hover:opacity-100 transition-opacity" onclick="filterListings('kivu')">
+              <div class="w-8 h-8 flex items-center justify-center mb-1">
+                <i class="fas fa-water text-lg"></i>
+              </div>
+              <span class="text-xs" id="filter-kivu">Lake Kivu</span>
+            </button>
+            <button class="filter-btn flex flex-col items-center opacity-70 hover:opacity-100 transition-opacity" onclick="filterListings('kigali')">
+              <div class="w-8 h-8 flex items-center justify-center mb-1">
+                <i class="fas fa-city text-lg"></i>
+              </div>
+              <span class="text-xs" id="filter-kigali">Kigali</span>
+            </button>
+            <button class="filter-btn flex flex-col items-center opacity-70 hover:opacity-100 transition-opacity" onclick="filterListings('coffee')">
+              <div class="w-8 h-8 flex items-center justify-center mb-1">
+                <i class="fas fa-coffee text-lg"></i>
+              </div>
+              <span class="text-xs" id="filter-coffee">Coffee Tours</span>
+            </button>
+            <button class="filter-btn flex flex-col items-center opacity-70 hover:opacity-100 transition-opacity" onclick="filterListings('village')">
+              <div class="w-8 h-8 flex items-center justify-center mb-1">
+                <i class="fas fa-home text-lg"></i>
+              </div>
+              <span class="text-xs" id="filter-village">Cultural Village</span>
+            </button>
+            <button class="filter-btn flex flex-col items-center opacity-70 hover:opacity-100 transition-opacity" onclick="filterListings('tea')">
+              <div class="w-8 h-8 flex items-center justify-center mb-1">
+                <i class="fas fa-leaf text-lg"></i>
+              </div>
+              <span class="text-xs" id="filter-tea">Tea Plantations</span>
+            </button>
+            <button class="filter-btn flex flex-col items-center opacity-70 hover:opacity-100 transition-opacity" onclick="filterListings('nyungwe')">
+              <div class="w-8 h-8 flex items-center justify-center mb-1">
+                <i class="fas fa-tree text-lg"></i>
+              </div>
+              <span class="text-xs" id="filter-nyungwe">Nyungwe Forest</span>
+            </button>
+            
+            <button class="filter-btn flex flex-col items-center opacity-70 hover:opacity-100 transition-opacity" onclick="filterListings('wifi')">
+              <div class="w-8 h-8 flex items-center justify-center mb-1">
+                <i class="fas fa-wifi text-lg"></i>
+              </div>
+              <span class="text-xs" id="filter-wifi">WiFi</span>
+            </button>
+            <button class="filter-btn flex flex-col items-center opacity-70 hover:opacity-100 transition-opacity" onclick="filterListings('meals')">
+              <div class="w-8 h-8 flex items-center justify-center mb-1">
+                <i class="fas fa-utensils text-lg"></i>
+              </div>
+              <span class="text-xs" id="filter-meals">Meals Included</span>
+            </button>
+          </div>
         </div>
+        <!-- Listings Grid -->
+        <div id="listingsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+      </div>
+
+      <!-- Web App Content -->
+      <div id="webAppContent" class="tab-content hidden">
+        <div class="grid md:grid-cols-2 gap-8">
+          <div>
+            <h2 class="text-xl font-semibold mb-4">
+              <i class="fas fa-plus-circle text-green-500 dark:text-green-400 mr-2"></i>
+              <span id="add-new">Add New Appointment</span>
+            </h2>
+            <form id="appointmentForm" class="bg-white dark:bg-gray-800 shadow-md rounded px-8 pt-6 pb-8 mb-4">
+              <div class="mb-4">
+                <label class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2" for="title">
+                  <i class="fas fa-heading text-gray-500 dark:text-gray-400 mr-1"></i><span id="title-label">Title</span>
+                </label>
+                <div class="icon-input">
+                  <i class="fas fa-pen text-gray-400 dark:text-gray-500"></i>
+                  <input class="shadow appearance-none border dark:border-gray-600 rounded w-full py-2 px-3 pl-8 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    id="title" type="text" name="title" placeholder="Meeting title" required />
+                </div>
+              </div>
+              <div class="mb-4">
+                <label class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2" for="description">
+                  <i class="fas fa-align-left text-gray-500 dark:text-gray-400 mr-1"></i><span id="desc-label">Description</span>
+                </label>
+                <div class="icon-input">
+                  <i class="fas fa-comment text-gray-400 dark:text-gray-500"></i>
+                  <textarea class="shadow appearance-none border dark:border-gray-600 rounded w-full py-2 px-3 pl-8 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    id="description" name="description" rows="3" placeholder="Meeting description"></textarea>
+                </div>
+              </div>
+              <div class="mb-4 date-time-wrapper">
+                <div>
+                  <label class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2" for="date">
+                    <i class="fas fa-calendar text-gray-500 dark:text-gray-400 mr-1"></i><span id="date-label">Date</span>
+                  </label>
+                  <div class="icon-input dropdown-calendar">
+                    <i class="fas fa-calendar-day text-gray-400 dark:text-gray-500"></i>
+                    <input class="flatpickr-input shadow appearance-none border dark:border-gray-600 rounded w-full py-2 px-3 pl-8 pr-10 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      id="date" type="text" name="date" placeholder="Select date" required readonly />
+                    <span class="calendar-toggle" onclick="toggleCalendar()">
+                      <i class="fas fa-chevron-down text-gray-400 dark:text-gray-500"></i>
+                    </span>
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2" for="time">
+                    <i class="fas fa-clock text-gray-500 dark:text-gray-400 mr-1"></i><span id="time-label">Time</span>
+                  </label>
+                  <div class="icon-input">
+                    <i class="fas fa-hourglass text-gray-400 dark:text-gray-500"></i>
+                    <input class="flatpickr-time shadow appearance-none border dark:border-gray-600 rounded w-full py-2 px-3 pl-8 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      id="time" type="text" name="time" placeholder="Select time" required readonly />
+                  </div>
+                </div>
+              </div>
+              <div class="mb-4">
+                <label class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2" for="attendees">
+                  <i class="fas fa-users text-gray-500 dark:text-gray-400 mr-1"></i><span id="attendees-label">Attendees (comma-separated emails)</span>
+                </label>
+                <div class="icon-input">
+                  <i class="fas fa-user-plus text-gray-400 dark:text-gray-500"></i>
+                  <input class="shadow appearance-none border dark:border-gray-600 rounded w-full py-2 px-3 pl-8 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    id="attendees" type="text" name="attendees" placeholder="john@example.com, jane@example.com" />
+                </div>
+              </div>
+              <div class="mb-4 border-t dark:border-gray-600 pt-4 mt-4">
+                <h3 class="text-lg font-semibold mb-3">
+                  <i class="fas fa-address-card text-purple-500 dark:text-purple-400 mr-2"></i><span id="contact-info">Contact Information</span>
+                </h3>
+                <div class="mb-3">
+                  <label class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2" for="contactName">
+                    <i class="fas fa-user text-gray-500 dark:text-gray-400 mr-1"></i><span id="contact-name-label">Contact Name</span>
+                  </label>
+                  <div class="icon-input">
+                    <i class="fas fa-id-badge text-gray-400 dark:text-gray-500"></i>
+                    <input class="shadow appearance-none border dark:border-gray-600 rounded w-full py-2 px-3 pl-8 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      id="contactName" type="text" name="contactName" placeholder="Name of the person to contact" />
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2" for="contactPhone">
+                    <i class="fas fa-phone text-gray-500 dark:text-gray-400 mr-1"></i><span id="contact-phone-label">Contact Phone</span>
+                  </label>
+                  <div class="icon-input">
+                    <i class="fas fa-phone-alt text-gray-400 dark:text-gray-500"></i>
+                    <input class="shadow appearance-none border dark:border-gray-600 rounded w-full py-2 px-3 pl-8 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      id="contactPhone" type="tel" name="contactPhone" placeholder="+250..." />
+                  </div>
+                </div>
+              </div>
+              <div class="mb-4 border-t dark:border-gray-600 pt-4 mt-4">
+                <h3 class="text-lg font-semibold mb-3">
+                  <i class="fas fa-hashtag text-blue-500 dark:text-blue-400 mr-2"></i><span id="social-media">Social Media Identification</span>
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                  <div>
+                    <label class="flex items-center text-gray-700 dark:text-gray-300 text-sm font-bold mb-2" for="socialFacebook">
+                      <i class="fab fa-facebook social-icon social-facebook"></i>Facebook
+                    </label>
+                    <input class="shadow appearance-none border dark:border-gray-600 rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      id="socialFacebook" type="text" name="socialFacebook" placeholder="Profile name/username" />
+                  </div>
+                  <div>
+                    <label class="flex items-center text-gray-700 dark:text-gray-300 text-sm font-bold mb-2" for="socialTwitter">
+                      <i class="fab fa-x-twitter social-icon social-twitter"></i>Twitter/X
+                    </label>
+                    <input class="shadow appearance-none border dark:border-gray-600 rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      id="socialTwitter" type="text" name="socialTwitter" placeholder="@username" />
+                  </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                  <div>
+                    <label class="flex items-center text-gray-700 dark:text-gray-300 text-sm font-bold mb-2" for="socialInstagram">
+                      <i class="fab fa-instagram social-icon social-instagram"></i>Instagram
+                    </label>
+                    <input class="shadow appearance-none border dark:border-gray-600 rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      id="socialInstagram" type="text" name="socialInstagram" placeholder="@username" />
+                  </div>
+                  <div>
+                    <label class="flex items-center text-gray-700 dark:text-gray-300 text-sm font-bold mb-2" for="socialWhatsApp">
+                      <i class="fab fa-whatsapp social-icon social-whatsapp"></i>WhatsApp
+                    </label>
+                    <input class="shadow appearance-none border dark:border-gray-600 rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      id="socialWhatsApp" type="text" name="socialWhatsApp" placeholder="+250..." />
+                  </div>
+                </div>
+              </div>
+              <div class="flex items-center justify-between">
+                <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline flex items-center" type="submit">
+                  <i class="fas fa-save mr-2"></i><span id="schedule-btn">Schedule Appointment</span>
+                </button>
+                <button class="bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500 text-gray-800 dark:text-gray-200 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline flex items-center" type="reset">
+                  <i class="fas fa-undo mr-2"></i><span id="reset-btn">Reset</span>
+                </button>
+              </div>
+            </form>
+          </div>
+          <div>
+            <h2 class="text-xl font-semibold mb-4">
+              <i class="fas fa-list-alt text-purple-500 dark:text-purple-400 mr-2"></i>
+              <span id="upcoming">Upcoming Appointments</span>
+            </h2>
+            <div class="space-y-4" id="appointmentsList"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- USSD Content -->
+      <div id="ussdContent" class="tab-content hidden">
+        <div class="flex justify-center">
+          <div class="ussd-container bg-white dark:bg-gray-800 shadow-md rounded px-6 py-6">
+            <h3 class="text-center font-bold mb-4 text-lg" id="ussd-title">USSD Scheduler</h3>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mb-4 text-center">Dial *123# to access this service</p>
+            <div class="ussd-screen bg-gray-100 dark:bg-gray-700 text-sm">
+              <div id="ussdScreen"></div>
+            </div>
+            <div class="flex">
+              <input type="text" id="ussdInput" class="ussd-input bg-white dark:bg-gray-700 w-full mr-2" maxlength="20" aria-label="Enter USSD input">
+              <button onclick="processUssdInput()" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded">
+                <span id="send-btn">Send</span>
+              </button>
+            </div>
+            <div class="mt-4 text-sm text-gray-500 dark:text-gray-400">
+              <p class="mb-2" id="instructions-label">Instructions:</p>
+              <ul class="list-disc ml-5 space-y-1" id="instructions">
+                <li id="instr-1">Enter the number or text for your selection</li>
+                <li id="instr-2">Press "Send" to proceed</li>
+                <li id="instr-3">USSD sessions typically time out after 30 seconds</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Updates Content -->
+      <div id="updatesContent" class="tab-content hidden">
+        <div class="container mx-auto px-4">
+          <h2 class="text-xl font-semibold mb-4">
+            <i class="fas fa-bullhorn text-yellow-500 dark:text-yellow-400 mr-2"></i>
+            <span id="updates-title">Rwanda Updates</span>
+          </h2>
+          <div class="grid md:grid-cols-2 gap-8">
+            <div class="bg-white dark:bg-gray-800 shadow-md rounded px-6 py-4">
+              <h3 class="text-lg font-semibold mb-3 flex items-center">
+                <i class="fas fa-newspaper text-blue-500 dark:text-blue-400 mr-2"></i>
+                <span id="local-news">Local News</span>
+              </h3>
+              <ul class="space-y-3 text-sm text-gray-700 dark:text-gray-300">
+                <li>
+                  <a href="https://www.newtimes.co.rw" target="_blank" class="hover:text-blue-500 dark:hover:text-blue-400">
+                    <strong>The New Times:</strong> <span id="news-1">Latest updates from Rwanda's leading newspaper</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="https://www.igihe.com" target="_blank" class="hover:text-blue-500 dark:hover:text-blue-400">
+                    <strong>Igihe:</strong> <span id="news-2">Kinyarwanda news portal with daily updates</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="https://ktpress.rw" target="_blank" class="hover:text-blue-500 dark:hover:text-blue-400">
+                    <strong>KT Press:</strong> <span id="news-3">Timely news and events in Rwanda</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <div class="bg-white dark:bg-gray-800 shadow-md rounded px-6 py-4">
+              <h3 class="text-lg font-semibold mb-3 flex items-center">
+                <i class="fab fa-x-twitter text-blue-400 dark:text-blue-300 mr-2"></i>
+                <span id="twitter-feeds">X Feeds</span>
+              </h3>
+              <ul class="space-y-3 text-sm text-gray-700 dark:text-gray-300">
+                <li>
+                  <a href="https://x.com/NewTimesRwanda" target="_blank" class="hover:text-blue-500 dark:hover:text-blue-400 flex items-center">
+                    <i class="fab fa-x-twitter social-twitter mr-2"></i>
+                    @NewTimesRwanda: <span id="tw-1">Official handle for The New Times</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="https://x.com/KTpressRW" target="_blank" class="hover:text-blue-500 dark:hover:text-blue-400 flex items-center">
+                    <i class="fab fa-x-twitter social-twitter mr-2"></i>
+                    @KTpressRW: <span id="tw-2">News updates from KT Press</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="https://x.com/RwandaGov" target="_blank" class="hover:text-blue-500 dark:hover:text-blue-400 flex items-center">
+                    <i class="fab fa-x-twitter social-twitter mr-2"></i>
+                    @RwandaGov: <span id="tw-3">Government of Rwanda updates</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <p class="mt-4 text-sm text-gray-500 dark:text-gray-400" id="updates-note">
+            Use these sources to stay informed and plan your appointments around key events in Rwanda.
+          </p>
+        </div>
+      </div>
+
+      <!-- Business Profile Content -->
+      <div id="businessContent" class="tab-content hidden">
+        <div class="container mx-auto px-4">
+          <h2 class="text-xl font-semibold mb-4">
+            <i class="fas fa-briefcase text-indigo-500 dark:text-indigo-400 mr-2"></i>
+            <span id="business-title">Business Profile: Inzu Rwanda</span>
+          </h2>
+          <div class="bg-white dark:bg-gray-800 shadow-md rounded px-6 py-4">
+            <p class="text-gray-700 dark:text-gray-300 mb-4" id="business-desc">
+              Inzu Rwanda is a luxury hospitality and real estate platform providing eco-friendly accommodations and cultural experiences in Rwanda. We cater to international tourists seeking unique, sustainable stays and local professionals or expatriates desiring luxurious weekend getaways. By integrating IoT for seamless guest experiences, we offer architecturally stunning eco-lodges, cultural packages like storytelling evenings, and remote work retreats. Our mission blends profitability with social impact—supporting local communities, preserving Rwanda’s heritage, and pioneering eco-tourism innovation.
+            </p>
+            <h3 class="text-lg font-semibold mb-2 flex items-center">
+              <i class="fas fa-star text-yellow-500 dark:text-yellow-400 mr-2"></i>
+              <span id="business-why">Why Inzu Rwanda?</span>
+            </h3>
+            <ul class="list-disc ml-5 space-y-2 text-gray-700 dark:text-gray-300" id="business-reasons">
+              <li id="reason-1">Unique blend of cultural authenticity, sustainability, and modern technology.</li>
+              <li id="reason-2">Targets affluent, eco-conscious travelers with tailored experiences.</li>
+              <li id="reason-3">Creates jobs and preserves Rwanda’s heritage through local partnerships.</li>
+            </ul>
+            <p class="mt-4 text-sm text-gray-500 dark:text-gray-400" id="business-contact">
+              Contact: None Habimana Olivier | Email: ewpmagazine7@gmail.com
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
 
-    <script>
-        const coffeeDetails = {
-            "Gishamwana": {
-                icon: "🌳",
-                description: "Gishamwana is an island located in Lake Kivu, known for its unique microclimate and fertile soils, producing coffee with distinct floral and citrus notes.Origin:Rwanda - Producer:Gishwana ISLAND - Variety:Red Bourbon - Process type: Natural/Sun Dried - Altitude Range:1700m - Harvest period February to May - Algrano's cupping score(SCA):86.5 points"
-            },
-            "Gakenke": {
-                icon: "🌿",
-                description: "Gakenke, situated in the Northern Province, is renowned for its high-altitude coffee farms that yield beans with bright acidity and fruity profiles.Characteristics Aroma: Caramel, fruit, and floral notes Taste: Bright acidity, full-bodied, notes of red apple, hibiscus, berry, sweet orange, and cocoa Aftertaste: Lingering sweetness of citrus Growing conditions Gakenke coffee is grown at high altitudes, ranging from 1,700–2,200 meters above sea level The coffee is grown on volcanic soils Producers Hinga Kawa Cooperative: A cooperative that grows Red Bourbon Arabica coffee Muhondo Coffee Company: A family business that works with smallholder farmers to produce coffee Dukundekawa: A cooperative that encourages farmers to preserve the environment and diversify their income."
-            },
-            "Nyamasheke": {
-                icon: "🧋",
-                description: "Nyamasheke, in the Western Province, offers coffee characterized by deep chocolate and berry flavors, attributed to its rich volcanic soils."
-            },
-            "Butare": {
-                icon: "☕️",
-                description: "Butare, located in the Southern Province, produces coffee with balanced acidity and sweet, nutty undertones, thanks to its favorable climate and elevation."
-            },
-            "Rulindo": {
-                icon: "🍵",
-                description: "Rulindo, in the Northern Province, is known for its aromatic coffees featuring floral and tea-like notes, a result of its unique terroir."
-            }
+  <!-- Scripts -->
+  <script>
+    // Localization
+    const translations = {
+      en: {
+        "app-title": "Rwanda Scheduler",
+        "listings-tab": "Listings",
+        "webapp-tab": "Appointments",
+        "ussd-tab": "USSD Interface",
+        "updates-tab": "Updates",
+        "business-tab": "Business Profile",
+        "add-new": "Add New Appointment",
+        "upcoming": "Upcoming Appointments",
+        "title-label": "Title",
+        "desc-label": "Description",
+        "date-label": "Date",
+        "time-label": "Time",
+        "attendees-label": "Attendees (comma-separated emails)",
+        "contact-info": "Contact Information",
+        "contact-name-label": "Contact Name",
+        "contact-phone-label": "Contact Phone",
+        "social-media": "Social Media Identification",
+        "schedule-btn": "Schedule Appointment",
+        "reset-btn": "Reset",
+        "ussd-title": "USSD Scheduler",
+        "send-btn": "Send",
+        "instructions-label": "Instructions:",
+        "instr-1": "Enter the number or text for your selection",
+        "instr-2": "Press 'Send' to proceed",
+        "instr-3": "USSD sessions typically time out after 30 seconds",
+        "ussd-main": 
+          "RWANDA SCHEDULER\n" +
+          "1. Book Health Appointment\n" +
+          "2. Schedule Transport\n" +
+          "3. Community Meeting\n" +
+          "4. Book Accommodation\n" +
+          "5. View Bookings\n" +
+          "0. Exit\n\n" +
+          "Enter option:",
+        "updates-title": "Rwanda Updates",
+        "local-news": "Local News",
+        "twitter-feeds": "X Feeds",
+        "news-1": "Latest updates from Rwanda's leading newspaper",
+        "news-2": "Kinyarwanda news portal with daily updates",
+        "news-3": "Timely news and events in Rwanda",
+        "tw-1": "Official handle for The New Times",
+        "tw-2": "News updates from KT Press",
+        "tw-3": "Government of Rwanda updates",
+        "updates-note": "Use these sources to stay informed and plan your bookings around key events in Rwanda.",
+        "business-title": "Business Profile: Inzu Rwanda",
+        "business-desc": "Inzu Rwanda is a luxury hospitality and real estate platform providing eco-friendly accommodations and cultural experiences in Rwanda. We cater to international tourists seeking unique, sustainable stays and local professionals or expatriates desiring luxurious weekend getaways. By integrating IoT for seamless guest experiences, we offer architecturally stunning eco-lodges, cultural packages like storytelling evenings, and remote work retreats. Our mission blends profitability with social impact—supporting local communities, preserving Rwanda’s heritage, and pioneering eco-tourism innovation.",
+        "business-why": "Why Inzu Rwanda?",
+        "reason-1": "Unique blend of cultural authenticity, sustainability, and modern technology.",
+        "reason-2": "Targets affluent, eco-conscious travelers with tailored experiences.",
+        "reason-3": "Creates jobs and preserves Rwanda’s heritage through local partnerships.",
+        "business-contact": "Contact: None Habimana Olivier | Email: ewpmagazine7@gmail.com",
+        "filter-gorilla": "Gorilla Trekking",
+        "filter-kivu": "Lake Kivu",
+        "filter-kigali": "Kigali",
+        "filter-coffee": "Coffee Tours",
+        "filter-village": "Cultural Village",
+        "filter-tea": "Tea Plantations",
+        "filter-nyungwe": "Nyungwe Forest",
+        "filter-akagera": "Akagera Safari",
+        "filter-wifi": "WiFi",
+        "filter-meals": "Meals Included"
+      },
+      rw: {
+        "app-title": "Guteganya mu Rwanda",
+        "listings-tab": "Ibicuruzwa",
+        "webapp-tab": "Ibyitegererezo",
+        "ussd-tab": "Urusobehame rwa USSD",
+        "updates-tab": "Ibipfanye vuba",
+        "business-tab": "Umwirondoro w’Ubucuruzi",
+        "add-new": "Ongeramo Icyitegererezo Gishya",
+        "upcoming": "Ibyitegererezo Birimbere",
+        "title-label": "Umutwe",
+        "desc-label": "Ibisobanuro",
+        "date-label": "Itariki",
+        "time-label": "Isaha",
+        "attendees-label": "Abitabiriye (imeri zivuzwe na za kab coma)",
+        "contact-info": "Amakuru yo Guhamagara",
+        "contact-name-label": "Izina ry'Uguhamagara",
+        "contact-phone-label": "Telefoni y'Uguhamagara",
+        "social-media": "Icyerekezo cy'Imbuga za Sosiyete",
+        "schedule-btn": "Teganya Icyitegererezo",
+        "reset-btn": "Hagarika",
+        "ussd-title": "Guteganya kuri USSD",
+        "send-btn": "Ohereza",
+        "instructions-label": "Amabwiriza:",
+        "instr-1": "Andika nimero cyangwa umwandiko w'ihitamo ryawe",
+        "instr-2": "Kanda 'Ohereza' kugirango ukomeze",
+        "instr-3": "Amasomo ya USSD arangira nyuma y'amasegonda 30",
+        "ussd-main": 
+          "GUTEGANYA MU RWANDA\n" +
+          "1. Teganya Uburera\n" +
+          "2. Teganya Ubwikorezi\n" +
+          "3. Inama y'Umuryango\n" +
+          "4. Teganya Ubuturo\n" +
+          "5. Reba Ibyateganijwe\n" +
+          "0. Soha\n\n" +
+          "Hitamo:",
+        "updates-title": "Ibipfanye vuba mu Rwanda",
+        "local-news": "Amakuru y’Ahantu",
+        "twitter-feeds": "Ibicuruzwa bya X",
+        "news-1": "Amakuru y’igihe cya vuba y’ikinyamakuru gikomeye cy’u Rwanda",
+        "news-2": "Ikinyamakuru cy’ikirundi cy’amakuru ya buri munsi",
+        "news-3": "Amakuru y’igihe na byabaye mu Rwanda",
+        "tw-1": "Akaunti yemewe ya The New Times",
+        "tw-2": "Amakuru y’igihe avuye kuri KT Press",
+        "tw-3": "Amakuru y’igihe avuye kuri Guverinoma y’u Rwanda",
+        "updates-note": "Koresha aya makuru kugira ngo umenye ibiri kuba kandi uteganye ibyitegererezo byawe ukurikije ibyabaye mu Rwanda.",
+        "business-title": "Umwirondoro w’Ubucuruzi: Inzu Rwanda",
+        "business-desc": "Inzu Rwanda ni urubuga rw’ubucuruzi bw’ubukerarugendo bw’ikigo cy’ubutunzi rwo hejuru hamwe n’imitungo itari iy’ubucuruzi itanga ubuturo bwiza kandi bukora mu miterere y’ibidukikije hamwe n’ibikorwa by’umuco mu Rwanda. Turengera abashyitsi b’amahanga b’ingeri zinyuranye bashaka ubuturo bwihariye kandi bukora mu buryo bw’ibidukikije, ndetse n’abahanga bo mu Rwanda cyangwa abahavukira hanze bashaka weekend z’ikireti cyiza. Mu guhuza IoT kugira ngo tumanike ubunararibonye bw’abashyitsi, dutanga ubuturo bw’ubwubatsi bwiza bw’ibigo by’ibidukikije, pakeje z’umuco nka nijoro yo kuganiriza ibitekerezo, uruzinduko rw’imiterere y’ikawa, n’ubumenyi bwo gukora indyo y’umuco. Inshinga yacu ihuza inyungu n’ingaruka nziza ku baturage—gufasha abaturage b’aho, kugumana umurage w’u Rwanda, no guharanira ubuhanga mu bukerarugendo bw’ibidukikije.",
+        "business-why": "Kuki Inzu Rwanda?",
+        "reason-1": "Guhuza neza umuco w’ukuri, ubwiza bw’ibidukikije, n’ikoranabuhanga rya kijyambere.",
+        "reason-2": "Kugeza ku bantu bafite ubushobozi, bashishikajwe n’ibidukikije bafite ubunararibonye bwihariye.",
+        "reason-3": "Gukora imirimo no kugumana umurage w’u Rwanda binyuze mu bukunga n’abaturage b’aho.",
+        "business-contact": "Twandikire: None Habimana Olivier | Imeri: ewpmagazine7@gmail.com",
+        "filter-gorilla": "Kurangira Goriya",
+        "filter-kivu": "Ikiyaga cya Kivu",
+        "filter-kigali": "Kigali",
+        "filter-coffee": "Uruzinduko rw’Iikawa",
+        "filter-village": "Umudugudu w’Umuco",
+        "filter-tea": "Ubushayi",
+        "filter-nyungwe": "IsHyamba rya Nyungwe",
+        "filter-akagera": "Uruzinduko rw’Akarere ka Akagera",
+        "filter-wifi": "Intaneti",
+        "filter-meals": "Ibiryo Birimo"
+      }
+    };
+
+    let currentLang = localStorage.getItem('language') || 'en';
+    function setLanguage(lang) {
+      currentLang = lang;
+      localStorage.setItem('language', lang);
+      document.getElementById('app-title').textContent = translations[lang]['app-title'];
+      document.getElementById('listings-tab').textContent = translations[lang]['listings-tab'];
+      document.getElementById('webapp-tab').textContent = translations[lang]['webapp-tab'];
+      document.getElementById('ussd-tab').textContent = translations[lang]['ussd-tab'];
+      document.getElementById('updates-tab').textContent = translations[lang]['updates-tab'];
+      document.getElementById('business-tab').textContent = translations[lang]['business-tab'];
+      document.getElementById('add-new').textContent = translations[lang]['add-new'];
+      document.getElementById('upcoming').textContent = translations[lang]['upcoming'];
+      document.getElementById('title-label').textContent = translations[lang]['title-label'];
+      document.getElementById('desc-label').textContent = translations[lang]['desc-label'];
+      document.getElementById('date-label').textContent = translations[lang]['date-label'];
+      document.getElementById('time-label').textContent = translations[lang]['time-label'];
+      document.getElementById('attendees-label').textContent = translations[lang]['attendees-label'];
+      document.getElementById('contact-info').textContent = translations[lang]['contact-info'];
+      document.getElementById('contact-name-label').textContent = translations[lang]['contact-name-label'];
+      document.getElementById('contact-phone-label').textContent = translations[lang]['contact-phone-label'];
+      document.getElementById('social-media').textContent = translations[lang]['social-media'];
+      document.getElementById('schedule-btn').textContent = translations[lang]['schedule-btn'];
+      document.getElementById('reset-btn').textContent = translations[lang]['reset-btn'];
+      document.getElementById('ussd-title').textContent = translations[lang]['ussd-title'];
+      document.getElementById('send-btn').textContent = translations[lang]['send-btn'];
+      document.getElementById('instructions-label').textContent = translations[lang]['instructions-label'];
+      document.getElementById('instr-1').textContent = translations[lang]['instr-1'];
+      document.getElementById('instr-2').textContent = translations[lang]['instr-2'];
+      document.getElementById('instr-3').textContent = translations[lang]['instr-3'];
+      document.getElementById('ussdScreen').textContent = translations[lang]['ussd-main'];
+      document.getElementById('updates-title').textContent = translations[lang]['updates-tab'];
+      document.getElementById('local-news').textContent = translations[lang]['local-news'];
+      document.getElementById('twitter-feeds').textContent = translations[lang]['twitter-feeds'];
+      document.getElementById('news-1').textContent = translations[lang]['news-1'];
+      document.getElementById('news-2').textContent = translations[lang]['news-2'];
+      document.getElementById('news-3').textContent = translations[lang]['news-3'];
+      document.getElementById('tw-1').textContent = translations[lang]['tw-1'];
+      document.getElementById('tw-2').textContent = translations[lang]['tw-2'];
+      document.getElementById('tw-3').textContent = translations[lang]['tw-3'];
+      document.getElementById('updates-note').textContent = translations[lang]['updates-note'];
+      document.getElementById('business-title').textContent = translations[lang]['business-title'];
+      document.getElementById('business-desc').textContent = translations[lang]['business-desc'];
+      document.getElementById('business-why').textContent = translations[lang]['business-why'];
+      document.getElementById('reason-1').textContent = translations[lang]['reason-1'];
+      document.getElementById('reason-2').textContent = translations[lang]['reason-2'];
+      document.getElementById('reason-3').textContent = translations[lang]['reason-3'];
+      document.getElementById('business-contact').textContent = translations[lang]['business-contact'];
+      document.getElementById('filter-gorilla').textContent = translations[lang]['filter-gorilla'];
+      document.getElementById('filter-kivu').textContent = translations[lang]['filter-kivu'];
+      document.getElementById('filter-kigali').textContent = translations[lang]['filter-kigali'];
+      document.getElementById('filter-coffee').textContent = translations[lang]['filter-coffee'];
+      document.getElementById('filter-village').textContent = translations[lang]['filter-village'];
+      document.getElementById('filter-tea').textContent = translations[lang]['filter-tea'];
+      document.getElementById('filter-nyungwe').textContent = translations[lang]['filter-nyungwe'];
+      document.getElementById('filter-akagera').textContent = translations[lang]['filter-akagera'];
+      document.getElementById('filter-wifi').textContent = translations[lang]['filter-wifi'];
+      document.getElementById('filter-meals').textContent = translations[lang]['filter-meals'];
+      renderListings();
+      renderAppointments();
+    }
+
+    // Flatpickr Initialization
+    let datePickerTheme = "light";
+    let datePicker = null;
+    let timePicker = null;
+
+    function initializeCalendars() {
+      if (datePicker) datePicker.destroy();
+      if (timePicker) timePicker.destroy();
+
+      datePicker = flatpickr("#date", {
+        enableTime: false,
+        dateFormat: "Y-m-d",
+        minDate: "today",
+        altInput: true,
+        altFormat: "F j, Y",
+        defaultDate: new Date().toLocaleString("en-US", { timeZone: "Africa/Kigali" }),
+        theme: datePickerTheme
+      });
+
+      timePicker = flatpickr("#time", {
+        enableTime: true,
+        noCalendar: true,
+        dateFormat: "H:i",
+        defaultDate: new Date().toLocaleString("en-US", { timeZone: "Africa/Kigali" }).split(' ')[1],
+        minuteIncrement: 15,
+        time_24hr: true,
+        theme: datePickerTheme
+      });
+    }
+
+    function toggleCalendar() {
+      datePicker.toggle();
+    }
+
+    function toggleDarkMode() {
+      if (document.documentElement.classList.contains('dark')) {
+        document.documentElement.classList.remove('dark');
+        datePickerTheme = "light";
+        localStorage.setItem('darkMode', 'false');
+      } else {
+        document.documentElement.classList.add('dark');
+        datePickerTheme = "dark";
+        localStorage.setItem('darkMode', 'true');
+      }
+      initializeCalendars();
+    }
+
+    function showTab(tabName) {
+      const tabContents = document.querySelectorAll('.tab-content');
+      tabContents.forEach(content => content.classList.add('hidden'));
+      const tabs = document.querySelectorAll('button[id$="Tab"]');
+      tabs.forEach(tab => {
+        tab.classList.remove('border-blue-500', 'text-blue-500');
+        tab.classList.add('text-gray-500', 'dark:text-gray-400');
+      });
+      document.getElementById(`${tabName}Content`).classList.remove('hidden');
+      document.getElementById(`${tabName}Tab`).classList.remove('text-gray-500', 'dark:text-gray-400');
+      document.getElementById(`${tabName}Tab`).classList.add('border-blue-500', 'text-blue-500');
+    }
+
+    // Mock SMS Function
+    function sendSMS(phone, message) {
+      console.log(`SMS to ${phone}: ${message}`);
+      // Example integration with Africa's Talking:
+      /*
+      const africasTalking = require('africastalking')({ apiKey: 'YOUR_KEY', username: 'YOUR_USERNAME' });
+      const sms = africasTalking.SMS;
+      sms.send({ to: phone, message })
+        .then(response => console.log('SMS sent:', response))
+        .catch(error => console.error('SMS error:', error));
+      */
+    }
+
+    // Listings Data (Mock)
+    const listingsData = [
+      {
+        id: 1,
+        name: "Volcanoes Eco-Lodge",
+        location: "Musanze",
+        price: 150,
+        image: "https://via.placeholder.com/300x200?text=Volcanoes+Eco-Lodge",
+        tags: ["gorilla", "wifi", "meals"],
+        description: "Eco-friendly lodge near Volcanoes National Park, perfect for gorilla trekking."
+      },
+      {
+        id: 2,
+        name: "Lake Kivu Serena",
+        location: "Gisenyi",
+        price: 200,
+        image: "https://via.placeholder.com/300x200?text=Lake+Kivu+Serena",
+        tags: ["kivu", "wifi", "meals"],
+        description: "Luxury hotel with stunning views of Lake Kivu."
+      },
+      {
+        id: 3,
+        name: "Kigali Marriott",
+        location: "Kigali",
+        price: 250,
+        image: "https://via.placeholder.com/300x200?text=Kigali+Marriott",
+        tags: ["kigali", "wifi", "meals"],
+        description: "Modern hotel in the heart of Kigali."
+      },
+      {
+        id: 4,
+        name: "Coffee Farm Homestay",
+        location: "Gicumbi",
+        price: 50,
+        image: "https://via.placeholder.com/300x200?text=Coffee+Farm",
+        tags: ["coffee", "village", "meals"],
+        description: "Experience Rwandan coffee culture with a local family."
+      },
+      {
+        id: 5,
+        name: "Iby’iwacu Village Stay",
+        location: "Musanze",
+        price: 80,
+        image: "https://via.placeholder.com/300x200?text=Cultural+Village",
+        tags: ["village", "gorilla", "meals"],
+        description: "Immerse in Rwandan culture with traditional dance and crafts."
+      },
+      {
+        id: 6,
+        name: "Gisakura Tea Lodge",
+        location: "Nyamasheke",
+        price: 120,
+        image: "https://via.placeholder.com/300x200?text=Tea+Lodge",
+        tags: ["tea", "nyungwe", "meals"],
+        description: "Cozy lodge amidst tea plantations near Nyungwe Forest."
+      }
+    ];
+
+    let currentFilter = null;
+    function renderListings() {
+      const grid = document.getElementById('listingsGrid');
+      grid.innerHTML = '';
+      const filteredListings = currentFilter ? listingsData.filter(listing => listing.tags.includes(currentFilter)) : listingsData;
+
+      filteredListings.forEach(listing => {
+        grid.innerHTML += `
+          <div class="listing-card bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden">
+            <img src="${listing.image}" alt="${listing.name}" class="w-full h-48 object-cover">
+            <div class="p-4">
+              <h3 class="text-lg font-semibold">${listing.name}</h3>
+              <p class="text-gray-600 dark:text-gray-400 text-sm">${listing.location}</p>
+              <p class="text-gray-700 dark:text-gray-300 mt-2">${listing.description}</p>
+              <div class="flex justify-between items-center mt-4">
+                <span class="text-blue-500 dark:text-blue-400 font-bold">$${listing.price}/night</span>
+                <button onclick="bookListing(${listing.id})" class="bg-blue-500 hover:bg-blue-700 text-white py-1 px-3 rounded">
+                  ${currentLang === 'en' ? 'Book Now' : 'Teganya Nonaha'}
+                </button>
+              </div>
+            </div>
+          </div>`;
+      });
+    }
+
+    function filterListings(tag) {
+      currentFilter = tag;
+      renderListings();
+    }
+
+    function bookListing(id) {
+      const listing = listingsData.find(l => l.id === id);
+      const booking = {
+        type: 'accommodation',
+        name: listing.name,
+        location: listing.location,
+        price: listing.price,
+        date: new Date().toISOString().split('T')[0],
+        contactPhone: prompt(currentLang === 'en' ? 'Enter your phone number (+250...)' : 'Andika numero yawe ya telefone (+250...)')
+      };
+      if (booking.contactPhone) {
+        let bookings = JSON.parse(localStorage.getItem('bookings') || '[]');
+        bookings.push(booking);
+        localStorage.setItem('bookings', JSON.stringify(bookings));
+        sendSMS(booking.contactPhone, `Your booking for ${booking.name} in ${booking.location} on ${booking.date} is confirmed. Total: $${booking.price}.`);
+        alert(currentLang === 'en' ? 'Booking confirmed!' : 'Guteganya kwemejwe!');
+      }
+    }
+
+    // Appointment Handling
+    document.getElementById('appointmentForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const appointment = {
+        type: 'appointment',
+        title: document.getElementById('title').value,
+        description: document.getElementById('description').value,
+        date: document.getElementById('date').value,
+        time: document.getElementById('time').value,
+        attendees: document.getElementById('attendees').value.split(',').map(email => email.trim()),
+        contactName: document.getElementById('contactName').value,
+        contactPhone: document.getElementById('contactPhone').value,
+        social: {
+          facebook: document.getElementById('socialFacebook').value,
+          twitter: document.getElementById('socialTwitter').value,
+          instagram: document.getElementById('socialInstagram').value,
+          whatsapp: document.getElementById('socialWhatsApp').value
+        }
+      };
+
+      let bookings = JSON.parse(localStorage.getItem('bookings') || '[]');
+      bookings.push(appointment);
+      localStorage.setItem('bookings', JSON.stringify(bookings));
+      sendSMS(appointment.contactPhone, `Your appointment "${appointment.title}" on ${appointment.date} at ${appointment.time} is confirmed.`);
+      this.reset();
+      alert(currentLang === 'en' ? 'Appointment scheduled successfully!' : 'Icyitegererezo cyateganijwe neza!');
+      renderAppointments();
+    });
+
+    function renderAppointments() {
+      const bookings = JSON.parse(localStorage.getItem('bookings') || '[]');
+      const container = document.getElementById('appointmentsList');
+      container.innerHTML = '';
+
+      bookings.filter(b => b.type === 'appointment').forEach((appt, index) => {
+        container.innerHTML += `
+          <div class="bg-white dark:bg-gray-800 shadow-md rounded px-6 py-4">
+            <div class="flex justify-between items-start">
+              <h3 class="text-lg font-semibold flex items-center">
+                <i class="fas fa-handshake text-blue-500 dark:text-blue-400 mr-2"></i>${appt.title}
+              </h3>
+              <button onclick="deleteBooking(${index})" class="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </div>
+            <p class="text-gray-600 dark:text-gray-400 text-sm mb-2 flex items-center">
+              <i class="far fa-calendar-check text-green-500 dark:text-green-400 mr-2"></i>${appt.date}, ${appt.time}
+            </p>
+            <p class="text-gray-700 dark:text-gray-300 mb-2">${appt.description}</p>
+            <p>${translations[currentLang]['contact-name-label']}: ${appt.contactName} (${appt.contactPhone})</p>
+          </div>`;
+      });
+    }
+
+    function deleteBooking(index) {
+      let bookings = JSON.parse(localStorage.getItem('bookings') || '[]');
+      bookings.splice(index, 1);
+      localStorage.setItem('bookings', JSON.stringify(bookings));
+      renderAppointments();
+    }
+
+    // USSD Processing
+    let ussdState = { step: 0, data: {} };
+    function processUssdInput() {
+      const input = document.getElementById('ussdInput').value;
+      const screen = document.getElementById('ussdScreen');
+
+      if (ussdState.step === 0) {
+        if (input === '1') {
+          ussdState.data.type = 'appointment';
+          ussdState.data.service = 'health';
+          ussdState.step = 1;
+          screen.textContent = currentLang === 'en' ? 
+            "BOOK HEALTH APPOINTMENT\n\nEnter date (YYYY-MM-DD):" :
+            "TEGANYA UBURERA\n\nAndika itariki (YYYY-MM-DD):";
+        } else if (input === '2') {
+          ussdState.data.type = 'appointment';
+          ussdState.data.service = 'transport';
+          ussdState.step = 1;
+          screen.textContent = currentLang === 'en' ? 
+            "SCHEDULE TRANSPORT\n\nEnter date (YYYY-MM-DD):" :
+            "TEGANYA UBWIKOREZI\n\nAndika itariki (YYYY-MM-DD):";
+        } else if (input === '3') {
+          ussdState.data.type = 'appointment';
+          ussdState.data.service = 'meeting';
+          ussdState.step = 1;
+          screen.textContent = currentLang === 'en' ? 
+            "COMMUNITY MEETING\n\nEnter date (YYYY-MM-DD):" :
+            "INAMA Y'UMURYANGO\n\nAndika itariki (YYYY-MM-DD):";
+        } else if (input === '4') {
+          ussdState.data.type = 'accommodation';
+          ussdState.step = 10;
+          screen.textContent = currentLang === 'en' ? 
+            "BOOK ACCOMMODATION\n1. Volcanoes Eco-Lodge\n2. Lake Kivu Serena\n3. Kigali Marriott\n4. Coffee Farm Homestay\n0. Back\n\nEnter option:" :
+            "TEGANYA UBUTURO\n1. Volcanoes Eco-Lodge\n2. Lake Kivu Serena\n3. Kigali Marriott\n4. Coffee Farm Homestay\n0. Garuka\n\nHitamo:";
+        } else if (input === '5') {
+          const bookings = JSON.parse(localStorage.getItem('bookings') || '[]');
+          let text = currentLang === 'en' ? "YOUR BOOKINGS:\n\n" : "IBYATEGANIJWE BYAWE:\n\n";
+          if (bookings.length === 0) {
+            text += currentLang === 'en' ? "No bookings found.\n" : "Nta byateganijwe byabonetse.\n";
+          } else {
+            bookings.forEach((b, i) => {
+              if (b.type === 'appointment') {
+                text += `${i + 1}. ${b.title}\n   ${b.date}, ${b.time}\n\n`;
+              } else {
+                text += `${i + 1}. ${b.name}\n   ${b.location}, ${b.date}\n\n`;
+              }
+            });
+          }
+          text += "0. Back to Main Menu\n\nEnter option:";
+          screen.textContent = text;
+        } else if (input === '0') {
+          ussdState = { step: 0, data: {} };
+          screen.textContent = translations[currentLang]['ussd-main'];
+        } else {
+          screen.textContent += currentLang === 'en' ? "\nInvalid option. Try again." : "\nIhitamo ridakwiye. Ongera ugerageze.";
+          setTimeout(() => screen.textContent = translations[currentLang]['ussd-main'], 1500);
+        }
+      } else if (ussdState.step === 1) {
+        ussdState.data.date = input;
+        ussdState.step = 2;
+        screen.textContent = currentLang === 'en' ? 
+          "Enter time (HH:MM):" : "Andika isaha (HH:MM):";
+      } else if (ussdState.step === 2) {
+        ussdState.data.time = input;
+        ussdState.step = 3;
+        screen.textContent = currentLang === 'en' ? 
+          "Enter title (e.g., Health Checkup):" : 
+          "Andika umutwe (urugero, Gusuzuma Uburera):";
+      } else if (ussdState.step === 3) {
+        ussdState.data.title = input;
+        ussdState.step = 4;
+        screen.textContent = currentLang === 'en' ? 
+          "Enter your phone number (+250...):" : 
+          "Andika numero yawe (+250...):";
+      } else if (ussdState.step === 4) {
+        ussdState.data.contactPhone = input;
+        ussdState.step = 5;
+        screen.textContent = currentLang === 'en' ? 
+          `Confirm Appointment:\nTitle: ${ussdState.data.title}\nDate: ${ussdState.data.date}\nTime: ${ussdState.data.time}\nPhone: ${input}\n1. Confirm\n0. Cancel` :
+          `Emeza Icyitegererezo:\nUmutwe: ${ussdState.data.title}\nItariki: ${ussdState.data.date}\nIsaha: ${ussdState.data.time}\nTelefone: ${input}\n1. Emeza\n0. Hagarika`;
+      } else if (ussdState.step === 5) {
+        if (input === '1') {
+          const appointment = {
+            type: 'appointment',
+            title: ussdState.data.title,
+            date: ussdState.data.date,
+            time: ussdState.data.time,
+            contactPhone: ussdState.data.contactPhone,
+            description: ussdState.data.service
+          };
+          let bookings = JSON.parse(localStorage.getItem('bookings') || '[]');
+          bookings.push(appointment);
+          localStorage.setItem('bookings', JSON.stringify(bookings));
+          sendSMS(appointment.contactPhone, `Your appointment "${appointment.title}" on ${appointment.date} at ${appointment.time} is confirmed.`);
+          screen.textContent = currentLang === 'en' ? 
+            "Appointment confirmed! You will receive an SMS." : 
+            "Icyitegererezo cyemejwe! Uzahabwa SMS.";
+          ussdState = { step: 0, data: {} };
+          setTimeout(() => screen.textContent = translations[currentLang]['ussd-main'], 2000);
+          renderAppointments();
+        } else {
+          screen.textContent = currentLang === 'en' ? 
+            "Appointment cancelled." : "Icyitegererezo cyahagaritswe.";
+          ussdState = { step: 0, data: {} };
+          setTimeout(() => screen.textContent = translations[currentLang]['ussd-main'], 2000);
+        }
+      } else if (ussdState.step === 10) {
+        const listingMap = {
+          '1': listingsData[0],
+          '2': listingsData[1],
+          '3': listingsData[2],
+          '4': listingsData[3]
         };
-
-        function addCoffee() {
-            const coffeeSelect = document.getElementById("coffee-input");
-            const coffeeList = document.getElementById("coffee-list");
-            const coffeeCount = document.getElementById("coffee-count");
-            const selectedCoffee = coffeeSelect.value;
-
-            if (selectedCoffee.trim() !== "") {
-                const li = document.createElement("li");
-                li.innerHTML = `
-                    <span>${coffeeDetails[selectedCoffee].icon} ${selectedCoffee}</span>
-                    <button class="delete-button" onclick="deleteCoffee(this)">Delete</button>
-                `;
-                li.addEventListener('click', () => showFullInfo(selectedCoffee));
-                coffeeList.appendChild(li);
-                coffeeCount.textContent = parseInt(coffeeCount.textContent) + 1;
-            }
+        if (listingMap[input]) {
+          ussdState.data.listing = listingMap[input];
+          ussdState.step = 11;
+          screen.textContent = currentLang === 'en' ? 
+            `BOOK ${listingMap[input].name.toUpperCase()}\n\nEnter check-in date (YYYY-MM-DD):` :
+            `TEGANYA ${listingMap[input].name.toUpperCase()}\n\nAndika itariki yo kwinjira (YYYY-MM-DD):`;
+        } else if (input === '0') {
+          ussdState = { step: 0, data: {} };
+          screen.textContent = translations[currentLang]['ussd-main'];
+        } else {
+          screen.textContent += currentLang === 'en' ? "\nInvalid option. Try again." : "\nIhitamo ridakwiye. Ongera ugerageze.";
+          setTimeout(() => screen.textContent = translations[currentLang]['ussd-main'], 1500);
         }
-
-        function deleteCoffee(button) {
-            const li = button.parentElement;
-            li.remove();
-            const coffeeCount = document.getElementById("coffee-count");
-            coffeeCount.textContent = parseInt(coffeeCount.textContent) - 1;
+      } else if (ussdState.step === 11) {
+        ussdState.data.date = input;
+        ussdState.step = 12;
+        screen.textContent = currentLang === 'en' ? 
+          "Enter your phone number (+250...):" : 
+          "Andika numero yawe (+250...):";
+      } else if (ussdState.step === 12) {
+        ussdState.data.contactPhone = input;
+        ussdState.step = 13;
+        screen.textContent = currentLang === 'en' ? 
+          `Confirm Booking:\n${ussdState.data.listing.name}\nLocation: ${ussdState.data.listing.location}\nDate: ${ussdState.data.date}\nPrice: $${ussdState.data.listing.price}/night\nPhone: ${input}\n1. Confirm\n0. Cancel` :
+          `Emeza Guteganya:\n${ussdState.data.listing.name}\nAho: ${ussdState.data.listing.location}\nItariki: ${ussdState.data.date}\nIgiciro: $${ussdState.data.listing.price}/ijoro\nTelefone: ${input}\n1. Emeza\n0. Hagarika`;
+      } else if (ussdState.step === 13) {
+        if (input === '1') {
+          const booking = {
+            type: 'accommodation',
+            name: ussdState.data.listing.name,
+            location: ussdState.data.listing.location,
+            price: ussdState.data.listing.price,
+            date: ussdState.data.date,
+            contactPhone: ussdState.data.contactPhone
+          };
+          let bookings = JSON.parse(localStorage.getItem('bookings') || '[]');
+          bookings.push(booking);
+          localStorage.setItem('bookings', JSON.stringify(bookings));
+          sendSMS(booking.contactPhone, `Your booking for ${booking.name} in ${booking.location} on ${booking.date} is confirmed. Total: $${booking.price}.`);
+          screen.textContent = currentLang === 'en' ? 
+            "Booking confirmed! You will receive an SMS." : 
+            "Guteganya kwemejwe! Uzahabwa SMS.";
+          ussdState = { step: 0, data: {} };
+          setTimeout(() => screen.textContent = translations[currentLang]['ussd-main'], 2000);
+        } else {
+          screen.textContent = currentLang === 'en' ? 
+            "Booking cancelled." : "Guteganya byahagaritswe.";
+          ussdState = { step: 0, data: {} };
+          setTimeout(() => screen.textContent = translations[currentLang]['ussd-main'], 2000);
         }
+      }
+      document.getElementById('ussdInput').value = '';
+    }
 
-        function showFullInfo(coffeeName) {
-            const fullInfo = document.getElementById("full-info");
-            const coffeeTitle = document.getElementById("coffee-title");
-            const coffeeDescription = document.getElementById("coffee-description");
+    // Service Worker Registration
+    if ('serviceWorker' in navigator) {
+      const swContent = `
+        self.addEventListener('install', event => {
+          event.waitUntil(
+            caches.open('app-cache').then(cache => {
+              return cache.addAll([
+                '/',
+                '/index.html',
+                'https://cdn.tailwindcss.com',
+                'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css',
+                'https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css',
+                'https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/themes/dark.css'
+              ]);
+            })
+          );
+        });
 
-            coffeeTitle.textContent = coffeeName;
-            coffeeDescription.textContent = coffeeDetails[coffeeName].description;
-            fullInfo.style.display = "block";
-        }
+        self.addEventListener('fetch', event => {
+          event.respondWith(
+            caches.match(event.request).then(response => {
+              return response || fetch(event.request);
+            })
+          );
+        });
+      `;
+      const blob = new Blob([swContent], { type: 'application/javascript' });
+      const swUrl = URL.createObjectURL(blob);
+      navigator.serviceWorker.register(swUrl).then(reg => {
+        console.log('Service Worker registered', reg);
+      }).catch(err => {
+        console.error('Service Worker registration failed', err);
+      });
+    }
 
-        function closeFullInfo() {
-            document.getElementById("full-info").style.display = "none";
-        }
-
-        function resetTracker() {
-            document.getElementById("coffee-list").innerHTML = "";
-            document.getElementById("coffee-count").textContent = "0";
-        }
-
-        function toggleDarkMode() {
-            document.body.classList.toggle("dark-mode");
-        }
-    </script>
+    // Initialization
+    document.addEventListener("DOMContentLoaded", function() {
+      initializeCalendars();
+      if (localStorage.getItem('darkMode') === 'true') {
+        document.documentElement.classList.add('dark');
+        document.getElementById('darkModeToggle').checked = true;
+        datePickerTheme = "dark";
+        initializeCalendars();
+      }
+      setLanguage(currentLang);
+      renderListings();
+      renderAppointments();
+      document.getElementById('ussdScreen').textContent = translations[currentLang]['ussd-main'];
+    });
+  </script>
 </body>
 </html>
